@@ -51,7 +51,7 @@ app.post('/siswa/tambah', (req, res) => {
             'kelas' : kelas
         }
         
-        dataOld.push(dataNew);
+        dataOld.unshift(dataNew);
 
         const parsing = JSON.stringify(dataOld);
 
@@ -61,7 +61,7 @@ app.post('/siswa/tambah', (req, res) => {
             }
             console.log(reply);
 
-            res.send('Data Di Tambahkan');
+            res.send('Data Berhasil Di Tambah');
         });
     });
 }); 
@@ -94,6 +94,38 @@ app.delete('/siswa/:id', function(req, res) {
     });
 });
 
+//Mengubah Data
+app.put('/siswa/:param', function(req, res){
+    const keys = "Siswa";
+
+    let { param } = req.params;
+    let { id } = req.body;
+    let { nama } = req.body;
+    let { kelas } = req.body;
+
+    client.get(keys, async function (err, value){
+        let data = await JSON.parse(value);
+
+        for(var i = 0 ; i < Object.keys(data).length ; i++){
+            if(data[i].id == param){
+                data[i].id = id;
+                data[i].nama = nama;
+                data[i].kelas = kelas;
+            }
+        }
+
+        let parsing = JSON.stringify(data);
+
+        client.set(keys, parsing, function(err, reply){
+            if(err){
+                console.log(err);
+            }
+            console.log(reply);
+
+            res.send("Data Berhasil Di Ubah")
+        });
+    });
+});
 
 
 app.listen(port, function(){
